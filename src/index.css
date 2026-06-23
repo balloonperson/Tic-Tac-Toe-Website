@@ -25,8 +25,6 @@ body {
 }
 
 .game-action {
-  align-self: center;
-  margin-bottom: 0.75rem;
   padding: 0.5rem 1.75rem;
   border: none;
   border-radius: 0.25rem;
@@ -41,9 +39,16 @@ body {
   background: #1d8a1d;
 }
 
-.turn-label {
+.game-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
   align-self: center;
   margin-bottom: 0.75rem;
+}
+
+.turn-label {
   font-size: 1rem;
   font-weight: 600;
 }
@@ -54,6 +59,23 @@ body {
 
 .turn-label--opponent {
   color: #c62828;
+}
+
+.game-result {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.game-result--win {
+  color: #22a022;
+}
+
+.game-result--lose {
+  color: #c62828;
+}
+
+.game-result--draw {
+  color: #555555;
 }
 
 .board-wrap {
@@ -85,6 +107,9 @@ body {
 }
 
 .cell-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   height: 100%;
   padding: 0;
@@ -94,8 +119,27 @@ body {
   transition: background-color 0.15s ease;
 }
 
-.cell-button:hover {
+.cell-button:not(:disabled):hover {
   background: rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.mark {
+  width: 55%;
+  height: 55%;
+  pointer-events: none;
+}
+
+.mark-x line {
+  stroke: #22a022;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.mark-o circle {
+  fill: none;
+  stroke: #c62828;
+  stroke-width: 12;
 }
 
 .board line {
