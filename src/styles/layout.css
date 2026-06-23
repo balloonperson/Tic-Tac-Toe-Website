@@ -1,0 +1,72 @@
+.app {
+  min-height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  padding: 1.5rem 1rem 0.75rem;
+}
+
+.title {
+  padding: 0 1rem 0.5rem;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: underline;
+}
+
+.header-body {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  min-height: 5.5rem;
+}
+
+.game-summary {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(11rem, calc(100% - 13rem));
+  font-size: 0.75rem;
+  line-height: 1.4;
+  text-align: center;
+  color: #444444;
+  pointer-events: none;
+}
+
+.header-controls {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .header-body {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: auto;
+  }
+
+  .game-summary {
+    position: static;
+    transform: none;
+    max-width: 14rem;
+    pointer-events: auto;
+  }
+
+  .header-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

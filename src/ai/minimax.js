@@ -1,4 +1,4 @@
-import { checkWinner, getAvailableMoves, isBoardFull } from './board.js'
+import { checkWinner, getAvailableMoves, isBoardFull } from '../rules/board.js'
 
 function minimax(board, depth, isAiTurn, aiMark, humanMark) {
   const winner = checkWinner(board)

@@ -1,0 +1,54 @@
+.game-action {
+  padding: 0.5rem 1.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: #22a022;
+  color: #ffffff;
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.game-action:hover {
+  background: #1d8a1d;
+}
+
+.game-status {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  align-self: center;
+  margin-bottom: 0.75rem;
+}
+
+.turn-label {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.turn-label--user {
+  color: #22a022;
+}
+
+.turn-label--opponent {
+  color: #c62828;
+}
+
+.game-result {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.game-result--win {
+  color: #22a022;
+}
+
+.game-result--lose {
+  color: #c62828;
+}
+
+.game-result--draw {
+  color: #555555;
+}
