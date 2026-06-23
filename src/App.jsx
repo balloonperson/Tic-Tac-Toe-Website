@@ -1,12 +1,23 @@
 import { useEffect, useState } from 'react'
-import { getBestMove } from './game/ai.js'
+import { getBestMove, getRandomMove } from './game/ai.js'
 import { EMPTY_BOARD, resolveGameOutcome } from './game/board.js'
+
+const DIFFICULTIES = [
+  { id: 'yourself', label: 'Play Yourself' },
+  { id: 'random', label: 'Random' },
+  { id: 'optimal', label: 'Optimal' },
+]
 
 function App() {
   const [gameState, setGameState] = useState('idle')
-  const [currentTurn, setCurrentTurn] = useState('user')
+  const [currentMark, setCurrentMark] = useState('X')
   const [board, setBoard] = useState(EMPTY_BOARD)
   const [result, setResult] = useState(null)
+  const [difficulty, setDifficulty] = useState('optimal')
+  const [playAs, setPlayAs] = useState('X')
+
+  const isAiMode = difficulty !== 'yourself'
+  const aiMark = playAs === 'X' ? 'O' : 'X'
 
   const resetBoard = () => {
     setBoard(EMPTY_BOARD)
@@ -14,13 +25,13 @@ function App() {
   }
 
   const startGame = () => {
-    setCurrentTurn('user')
+    setCurrentMark('X')
     resetBoard()
     setGameState('playing')
   }
 
   const restartGame = () => {
-    setCurrentTurn('user')
+    setCurrentMark('X')
     resetBoard()
     setGameState('playing')
   }
@@ -30,14 +41,12 @@ function App() {
 
     const { winner, isDraw } = resolveGameOutcome(nextBoard)
 
-    if (winner === 'X') {
-      setResult('win')
-      setGameState('ended')
-      return
-    }
-
-    if (winner === 'O') {
-      setResult('lose')
+    if (winner) {
+      if (difficulty === 'yourself') {
+        setResult(winner === 'X' ? 'x-win' : 'o-win')
+      } else {
+        setResult(winner === playAs ? 'win' : 'lose')
+      }
       setGameState('ended')
       return
     }
@@ -48,45 +57,139 @@ function App() {
       return
     }
 
-    setCurrentTurn(placedMark === 'X' ? 'opponent' : 'user')
+    setCurrentMark(placedMark === 'X' ? 'O' : 'X')
   }
 
   useEffect(() => {
-    if (gameState !== 'playing' || currentTurn !== 'opponent') {
+    if (gameState !== 'playing' || currentMark !== aiMark) {
+      return
+    }
+
+    if (!isAiMode) {
       return
     }
 
     const timer = setTimeout(() => {
-      const move = getBestMove(board)
+      const move =
+        difficulty === 'optimal' ? getBestMove(board, aiMark, playAs) : getRandomMove(board)
 
       if (move === null) {
         return
       }
 
       const nextBoard = [...board]
-      nextBoard[move] = 'O'
-      finishMove(nextBoard, 'O')
+      nextBoard[move] = aiMark
+      finishMove(nextBoard, aiMark)
     }, 400)
 
     return () => clearTimeout(timer)
-  }, [gameState, currentTurn, board])
+  }, [gameState, currentMark, board, difficulty, playAs, aiMark, isAiMode])
 
   const handleCellClick = (index) => {
-    if (gameState !== 'playing' || currentTurn !== 'user' || board[index]) {
+    if (gameState !== 'playing' || board[index]) {
+      return
+    }
+
+    if (isAiMode && currentMark !== playAs) {
       return
     }
 
     const nextBoard = [...board]
-    nextBoard[index] = 'X'
-    finishMove(nextBoard, 'X')
+    nextBoard[index] = isAiMode ? playAs : currentMark
+    finishMove(nextBoard, isAiMode ? playAs : currentMark)
   }
 
-  const turnLabel = currentTurn === 'user' ? 'You' : 'Opponent'
+  const handlePlayAsChange = (mark) => {
+    if (!isAiMode) {
+      return
+    }
+
+    setPlayAs(mark)
+  }
+
+  const turnLabel = isAiMode
+    ? currentMark === playAs
+      ? 'You'
+      : 'Opponent'
+    : currentMark
+
+  const isUserTurn = isAiMode ? currentMark === playAs : true
   const isPlaying = gameState === 'playing'
+  const showBoard = gameState !== 'idle'
+
+  const isCellDisabled = (mark) => {
+    if (!isPlaying || mark) {
+      return true
+    }
+
+    if (!isAiMode) {
+      return false
+    }
+
+    return currentMark !== playAs
+  }
 
   return (
     <main className="app">
-      <h1 className="title">Tic-Tac-Toe</h1>
+      <div className="app-header">
+        <h1 className="title">Tic-Tac-Toe</h1>
+
+        <div className="header-body">
+          <p className="game-summary">
+            Get three in a row to win.
+            <br />
+            Start begins play.
+            <br />
+            Play As picks X or O.
+            <br />
+            Difficulty sets the opponent.
+            <br />
+            Tap open squares on your turn.
+            <br />
+            Restart clears the board.
+          </p>
+
+          <div className="header-controls">
+          <aside className="play-as-panel">
+            <h2 className="play-as-title">Play As:</h2>
+            <div className="play-as-buttons">
+              <button
+                className={`play-as-button play-as-button--x ${playAs === 'X' ? 'play-as-button--active' : ''}`}
+                type="button"
+                onClick={() => handlePlayAsChange('X')}
+                disabled={!isAiMode}
+              >
+                X
+              </button>
+              <button
+                className={`play-as-button play-as-button--o ${playAs === 'O' ? 'play-as-button--active' : ''}`}
+                type="button"
+                onClick={() => handlePlayAsChange('O')}
+                disabled={!isAiMode}
+              >
+                O
+              </button>
+            </div>
+          </aside>
+
+          <aside className="difficulty-panel">
+          <h2 className="difficulty-title">Difficulty</h2>
+          <div className="difficulty-buttons">
+            {DIFFICULTIES.map(({ id, label }) => (
+              <button
+                key={id}
+                className={`difficulty-button ${difficulty === id ? 'difficulty-button--active' : ''}`}
+                type="button"
+                onClick={() => setDifficulty(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </aside>
+          </div>
+        </div>
+      </div>
 
       <div className="game-status">
         {gameState === 'idle' || gameState === 'ended' ? (
@@ -98,13 +201,25 @@ function App() {
             {gameState === 'idle' ? 'Start' : 'Restart'}
           </button>
         ) : (
-          <p className={`turn-label ${currentTurn === 'user' ? 'turn-label--user' : 'turn-label--opponent'}`}>
+          <p
+            className={`turn-label ${
+              isAiMode
+                ? isUserTurn
+                  ? 'turn-label--user'
+                  : 'turn-label--opponent'
+                : currentMark === 'X'
+                  ? 'turn-label--user'
+                  : 'turn-label--opponent'
+            }`}
+          >
             Turn: {turnLabel}
           </p>
         )}
 
         {result === 'win' && <p className="game-result game-result--win">You Win</p>}
         {result === 'lose' && <p className="game-result game-result--lose">You Lose</p>}
+        {result === 'x-win' && <p className="game-result game-result--win">X Wins</p>}
+        {result === 'o-win' && <p className="game-result game-result--lose">O Wins</p>}
         {result === 'draw' && <p className="game-result game-result--draw">Draw</p>}
       </div>
 
@@ -117,7 +232,7 @@ function App() {
             <line x1="0" y1="66.666" x2="100" y2="66.666" />
           </svg>
 
-          {isPlaying && (
+          {showBoard && (
             <div className="cell-grid">
               {board.map((mark, index) => (
                 <button
@@ -126,7 +241,7 @@ function App() {
                   type="button"
                   aria-label={`Square ${index + 1}`}
                   onClick={() => handleCellClick(index)}
-                  disabled={Boolean(mark) || currentTurn !== 'user'}
+                  disabled={isCellDisabled(mark)}
                 >
                   {mark === 'X' && (
                     <svg className="mark mark-x" viewBox="0 0 100 100" aria-hidden="true">

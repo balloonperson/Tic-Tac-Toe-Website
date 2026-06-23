@@ -58,3 +58,13 @@ export function getBestMove(board, aiMark = 'O', humanMark = 'X') {
 
   return bestMove
 }
+
+export function getRandomMove(board) {
+  const moves = getAvailableMoves(board)
+
+  if (moves.length === 0) {
+    return null
+  }
+
+  return moves[Math.floor(Math.random() * moves.length)]
+}
