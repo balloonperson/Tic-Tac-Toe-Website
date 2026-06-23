@@ -12,10 +12,93 @@ body {
 
 .app {
   min-height: 100vh;
-  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
+  width: 100%;
+  padding: 1.5rem 1rem 0.75rem;
   font-weight: bold;
+  text-align: center;
   text-decoration: underline;
+}
+
+.game-action {
+  align-self: center;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 1.75rem;
+  border: none;
+  border-radius: 0.25rem;
+  background: #22a022;
+  color: #ffffff;
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.game-action:hover {
+  background: #1d8a1d;
+}
+
+.turn-label {
+  align-self: center;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.turn-label--user {
+  color: #22a022;
+}
+
+.turn-label--opponent {
+  color: #c62828;
+}
+
+.board-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1rem;
+}
+
+.board-container {
+  position: relative;
+  width: min(80vmin, calc(100vw - 2rem), calc(100vh - 8rem));
+  aspect-ratio: 1;
+}
+
+.board {
+  width: 100%;
+  height: 100%;
+}
+
+.cell-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.cell-button {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: default;
+  transition: background-color 0.15s ease;
+}
+
+.cell-button:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.board line {
+  stroke: #111111;
+  stroke-width: 2;
 }
