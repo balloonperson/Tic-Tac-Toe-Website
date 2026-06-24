@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic-Tac-Toe</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #ffffff;
+        color: #111111;
+      }
+
+      .app {
+        min-height: 100vh;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .app-header {
+        position: relative;
+        flex-shrink: 0;
+        width: 100%;
+        padding: 1.5rem 1rem 0.75rem;
+      }
+
+      .title {
+        padding: 0 1rem 0.5rem;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: underline;
+      }
+
+      .header-body {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        width: 100%;
+        min-height: 5.5rem;
+      }
+
+      .game-summary {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: min(11rem, calc(100% - 13rem));
+        font-size: 0.75rem;
+        line-height: 1.4;
+        text-align: center;
+        color: #444444;
+        pointer-events: none;
+      }
+
+      .header-controls {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-shrink: 0;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      @media (max-width: 640px) {
+        .header-body {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.75rem;
+          min-height: auto;
+        }
+
+        .game-summary {
+          position: static;
+          transform: none;
+          max-width: 14rem;
+          pointer-events: auto;
+        }
+
+        .header-controls {
+          width: 100%;
+          justify-content: flex-end;
+        }
+      }
+
+      .play-as-panel {
+        margin-left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.35rem;
+      }
+
+      .difficulty-panel {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.35rem;
+      }
+
+      .play-as-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #555555;
+      }
+
+      .play-as-buttons {
+        display: flex;
+        gap: 0.35rem;
+      }
+
+      .play-as-button {
+        min-width: 2.25rem;
+        padding: 0.35rem 0.65rem;
+        border: 1px solid #cccccc;
+        border-radius: 0.25rem;
+        background: #ffffff;
+        color: #111111;
+        font: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      }
+
+      .play-as-button:hover:not(:disabled) {
+        border-color: #22a022;
+      }
+
+      .play-as-button:disabled {
+        cursor: default;
+        opacity: 0.55;
+      }
+
+      .play-as-button--x.play-as-button--active {
+        background: #22a022;
+        border-color: #22a022;
+        color: #ffffff;
+      }
+
+      .play-as-button--o.play-as-button--active {
+        background: #c62828;
+        border-color: #c62828;
+        color: #ffffff;
+      }
+
+      .difficulty-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #555555;
+      }
+
+      .difficulty-buttons {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.35rem;
+      }
+
+      .difficulty-button {
+        padding: 0.35rem 0.65rem;
+        border: 1px solid #cccccc;
+        border-radius: 0.25rem;
+        background: #ffffff;
+        color: #111111;
+        font: inherit;
+        font-size: 0.8rem;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+      }
+
+      .difficulty-button:hover {
+        border-color: #22a022;
+      }
+
+      .difficulty-button--active {
+        background: #22a022;
+        border-color: #22a022;
+        color: #ffffff;
+      }
+
+      .game-action {
+        padding: 0.5rem 1.75rem;
+        border: none;
+        border-radius: 0.25rem;
+        background: #22a022;
+        color: #ffffff;
+        font: inherit;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      .game-action:hover {
+        background: #1d8a1d;
+      }
+
+      .game-status {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        align-self: center;
+        margin-bottom: 0.75rem;
+      }
+
+      .turn-label {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .turn-label--user {
+        color: #22a022;
+      }
+
+      .turn-label--opponent {
+        color: #c62828;
+      }
+
+      .game-result {
+        font-size: 1rem;
+        font-weight: bold;
+      }
+
+      .game-result--win {
+        color: #22a022;
+      }
+
+      .game-result--lose {
+        color: #c62828;
+      }
+
+      .game-result--draw {
+        color: #555555;
+      }
+
+      .board-wrap {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 0 1rem 1rem;
+      }
+
+      .board-container {
+        position: relative;
+        container-type: size;
+        container-name: board;
+        aspect-ratio: 1;
+        width: min(80vmin, calc(100vw - 2rem), calc(100dvh - 8rem));
+        max-width: 100%;
+        max-height: 100%;
+        height: auto;
+      }
+
+      .board {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .cell-grid {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+      }
+
+      .cell-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: default;
+        border-radius: 0;
+      }
+
+      .cell-button:not(:disabled)::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 78%;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        background: transparent;
+        pointer-events: none;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .cell-button:not(:disabled):hover {
+        cursor: pointer;
+      }
+
+      .cell-button:not(:disabled):hover::before {
+        background-color: rgba(0, 0, 0, 0.06);
+        box-shadow: inset 0 0 0 0.35cqmin rgba(0, 0, 0, 0.2);
+      }
+
+      .cell-button:not(:disabled):focus-visible {
+        outline: none;
+      }
+
+      .cell-button:not(:disabled):focus-visible::before {
+        box-shadow: inset 0 0 0 0.4cqmin rgba(34, 160, 34, 0.55);
+      }
+
+      .mark {
+        width: 55%;
+        height: 55%;
+        pointer-events: none;
+      }
+
+      .mark-x line {
+        stroke: #22a022;
+        stroke-linecap: round;
+      }
+
+      .mark-o circle {
+        fill: none;
+        stroke: #c62828;
+      }
+
+      .board line {
+        stroke: #111111;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@19.1.0",
+          "react-dom/client": "https://esm.sh/react-dom@19.1.0/client"
+        }
+      }
+    </script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.9/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script
+      type="text/babel"
+      data-type="module"
+      data-presets="typescript,react"
+      src="./tsx_app.tsx"
+    ></script>
+  </body>
+</html>
