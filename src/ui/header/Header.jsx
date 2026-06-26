@@ -10,7 +10,7 @@ export default function Header({
 }) {
   return (
     <div className="app-header">
-      <h1 className="title">Tic-Tac-Toe</h1>
+      <h1 className="title">Dad's Tic Tac Toe</h1>
 
       <div className="header-body">
         <p className="game-summary">
