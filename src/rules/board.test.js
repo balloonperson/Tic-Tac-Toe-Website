@@ -5,8 +5,8 @@ import {
   getAvailableMoves,
   isBoardFull,
   resolveGameOutcome,
-} from '../src/rules/board.js'
-import { MARK_O, MARK_X } from '../src/rules/constants.js'
+} from './board.js'
+import { MARK_O, MARK_X } from './constants.js'
 
 function boardFrom(cells) {
   return cells.map((cell) => (cell === '.' ? null : cell))

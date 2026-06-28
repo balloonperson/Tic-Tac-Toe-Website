@@ -10,8 +10,7 @@
     "start": "npm run build && npm run preview",
     "watch": "node ./node_modules/vite/bin/vite.js build --watch",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:board": "vitest run --config .vitest/vitest.config.js"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "react": "^19.1.0",
