@@ -8,3 +8,8 @@
 - Do not give any explaination of what you are doing while you are working
 
 - Your goal is to minimize the number of input tokens and especially output tokens you use to accomplish the requested task.
+
+
+## SPECIAL RULES WHEN CHANGING RULES OF THE GAME
+
+ - only load and read the constants.js file and attempt to accomplish the task by only changing or editing this one file.
