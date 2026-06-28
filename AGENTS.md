@@ -12,4 +12,6 @@
 
 ## SPECIAL RULES WHEN CHANGING RULES OF THE GAME
 
- - only load and read the constants.js file and attempt to accomplish the task by only changing or editing this one file.
+ - only load the constants.js file and attempt to accomplish the task by only changing or editing this one file.
+
+ - DO NOT load, grep, or search any other file!
