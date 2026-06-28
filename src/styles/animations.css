@@ -1,0 +1,20 @@
+@keyframes mark-x-place-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mark-x--place {
+  transform-origin: center;
+  animation: mark-x-place-spin 1s linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark-x--place {
+    animation: none;
+  }
+}
