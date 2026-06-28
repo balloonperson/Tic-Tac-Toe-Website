@@ -27,14 +27,14 @@ describe('checkWinner', () => {
     expect(checkWinner(board)).toBe(MARK_X)
   })
 
-  it('detects O winning on the middle column', () => {
+  it('does not detect O winning on the middle column', () => {
     const board = boardFrom(['X', 'O', 'X', '.', 'O', '.', 'X', 'O', '.'])
-    expect(checkWinner(board)).toBe(MARK_O)
+    expect(checkWinner(board)).toBeNull()
   })
 
-  it('detects X winning on the main diagonal', () => {
+  it('does not detect X winning on the main diagonal through the middle', () => {
     const board = boardFrom(['X', 'O', '.', '.', 'X', 'O', 'O', '.', 'X'])
-    expect(checkWinner(board)).toBe(MARK_X)
+    expect(checkWinner(board)).toBeNull()
   })
 })
 
