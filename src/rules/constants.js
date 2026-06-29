@@ -1,6 +1,8 @@
 export const MARK_X = 'X'
 export const MARK_O = 'O'
 
+export const EMPTY_FIRST_MOVES = { [MARK_X]: null, [MARK_O]: null }
+
 export const CELL_COUNT = 9
 export const EMPTY_BOARD = Array(CELL_COUNT).fill(null)
 

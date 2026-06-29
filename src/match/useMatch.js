@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { STRATEGIES } from '../ai/strategies.js'
-import { EMPTY_BOARD, resolveGameOutcome } from '../rules/board.js'
+import {
+  applyFirstMove,
+  EMPTY_BOARD,
+  EMPTY_FIRST_MOVES,
+  resolveGameOutcome,
+} from '../rules/board.js'
 import { MARK_O, MARK_X } from '../rules/constants.js'
 import { getAiMark, getTurnLabel, isAiMode } from '../setup/helpers.js'
 import { DEFAULT_DIFFICULTY, DEFAULT_PLAY_AS } from '../setup/options.js'
@@ -12,6 +17,7 @@ export function useMatch() {
   const [gameState, setGameState] = useState('idle')
   const [currentMark, setCurrentMark] = useState(MARK_X)
   const [board, setBoard] = useState(EMPTY_BOARD)
+  const [firstMoves, setFirstMoves] = useState(EMPTY_FIRST_MOVES)
   const [result, setResult] = useState(null)
   const [difficulty, setDifficulty] = useState(DEFAULT_DIFFICULTY)
   const [playAs, setPlayAs] = useState(DEFAULT_PLAY_AS)
@@ -21,6 +27,7 @@ export function useMatch() {
 
   const resetBoard = () => {
     setBoard(EMPTY_BOARD)
+    setFirstMoves(EMPTY_FIRST_MOVES)
     setResult(null)
   }
 
@@ -36,10 +43,13 @@ export function useMatch() {
     setGameState('playing')
   }
 
-  const finishMove = (nextBoard, placedMark) => {
-    setBoard(nextBoard)
+  const finishMove = (nextBoard, placedMark, moveIndex) => {
+    const nextFirstMoves = applyFirstMove(firstMoves, placedMark, moveIndex)
 
-    const { winner, isDraw } = resolveGameOutcome(nextBoard)
+    setBoard(nextBoard)
+    setFirstMoves(nextFirstMoves)
+
+    const { winner, isDraw } = resolveGameOutcome(nextBoard, nextFirstMoves)
 
     if (winner) {
       setResult(mapGameResult(winner, difficulty, playAs))
@@ -71,7 +81,7 @@ export function useMatch() {
     }
 
     const timer = setTimeout(() => {
-      const move = strategy(board, aiMark, playAs)
+      const move = strategy(board, aiMark, playAs, firstMoves)
 
       if (move === null) {
         return
@@ -79,11 +89,11 @@ export function useMatch() {
 
       const nextBoard = [...board]
       nextBoard[move] = aiMark
-      finishMove(nextBoard, aiMark)
+      finishMove(nextBoard, aiMark, move)
     }, AI_MOVE_DELAY_MS)
 
     return () => clearTimeout(timer)
-  }, [gameState, currentMark, board, difficulty, playAs, aiMark, aiMode])
+  }, [gameState, currentMark, board, firstMoves, difficulty, playAs, aiMark, aiMode])
 
   const handleCellClick = (index) => {
     if (gameState !== 'playing' || board[index]) {
@@ -95,8 +105,9 @@ export function useMatch() {
     }
 
     const nextBoard = [...board]
-    nextBoard[index] = aiMode ? playAs : currentMark
-    finishMove(nextBoard, aiMode ? playAs : currentMark)
+    const placedMark = aiMode ? playAs : currentMark
+    nextBoard[index] = placedMark
+    finishMove(nextBoard, placedMark, index)
   }
 
   const handlePlayAsChange = (mark) => {

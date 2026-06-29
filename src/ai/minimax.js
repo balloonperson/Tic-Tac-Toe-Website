@@ -1,7 +1,8 @@
 import { checkWinner, getAvailableMoves, isBoardFull } from '../rules/board.js'
+import { EMPTY_FIRST_MOVES } from '../rules/constants.js'
 
-function minimax(board, depth, isAiTurn, aiMark, humanMark) {
-  const winner = checkWinner(board)
+function minimax(board, depth, isAiTurn, aiMark, humanMark, firstMoves) {
+  const winner = checkWinner(board, firstMoves)
 
   if (winner === aiMark) {
     return 10 - depth
@@ -20,7 +21,7 @@ function minimax(board, depth, isAiTurn, aiMark, humanMark) {
   if (isAiTurn) {
     return availableMoves.reduce((bestScore, move) => {
       board[move] = aiMark
-      const score = minimax(board, depth + 1, false, aiMark, humanMark)
+      const score = minimax(board, depth + 1, false, aiMark, humanMark, firstMoves)
       board[move] = null
       return Math.max(score, bestScore)
     }, -Infinity)
@@ -28,13 +29,18 @@ function minimax(board, depth, isAiTurn, aiMark, humanMark) {
 
   return availableMoves.reduce((bestScore, move) => {
     board[move] = humanMark
-    const score = minimax(board, depth + 1, true, aiMark, humanMark)
+    const score = minimax(board, depth + 1, true, aiMark, humanMark, firstMoves)
     board[move] = null
     return Math.min(score, bestScore)
   }, Infinity)
 }
 
-export function getBestMove(board, aiMark = 'O', humanMark = 'X') {
+export function getBestMove(
+  board,
+  aiMark = 'O',
+  humanMark = 'X',
+  firstMoves = EMPTY_FIRST_MOVES,
+) {
   const boardCopy = [...board]
   const availableMoves = getAvailableMoves(boardCopy)
 
@@ -47,7 +53,7 @@ export function getBestMove(board, aiMark = 'O', humanMark = 'X') {
 
   for (const move of availableMoves) {
     boardCopy[move] = aiMark
-    const score = minimax(boardCopy, 0, false, aiMark, humanMark)
+    const score = minimax(boardCopy, 0, false, aiMark, humanMark, firstMoves)
     boardCopy[move] = null
 
     if (score > bestScore) {
